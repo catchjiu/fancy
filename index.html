@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Mat Lab - Elite BJJ Portal</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Instrument+Sans:ital,wght@0,400..700;1,400..700&amp;family=Instrument+Serif:ital@0;1&amp;display=swap" rel="stylesheet">
+
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Instrument Sans"', 'sans-serif'],
+                        serif: ['"Instrument Serif"', 'serif'],
+                    },
+                    colors: {
+                        black: '#000000',
+                        'electric-blue': '#3054ff',
+                        'deep-indigo': '#b4c0ff',
+                    },
+                    keyframes: {
+                        fadeUpScale: {
+                            '0%': { opacity: '0', transform: 'translateY(40px) scale(0.95)' },
+                            '100%': { opacity: '1', transform: 'translateY(0) scale(1)' },
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        }
+                    },
+                    animation: {
+                        'fade-up': 'fadeUpScale 1s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+                        'fade-in': 'fadeIn 1.5s ease-out forwards',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #000000;
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        .delay-100 { animation-delay: 100ms; }
+        .delay-200 { animation-delay: 200ms; }
+        .delay-300 { animation-delay: 300ms; }
+        .delay-400 { animation-delay: 400ms; }
+        .delay-500 { animation-delay: 500ms; }
+        .delay-700 { animation-delay: 700ms; }
+        .delay-900 { animation-delay: 900ms; }
+
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.02);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .progress-bar-stripes {
+            background-image: linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.1) 75%, transparent 75%, transparent);
+            background-size: 1rem 1rem;
+        }
+    </style>
+</head>
+<body class="antialiased selection:bg-electric-blue selection:text-white h-screen w-full relative">
+
+    <div class="fixed inset-0 z-0 w-full h-full overflow-hidden bg-black animate-fade-in">
+        <video autoplay loop muted playsinline class="absolute top-1/2 left-1/2 min-w-full min-h-full w-auto h-auto object-cover -translate-x-1/2 -translate-y-1/2 opacity-60 scale-105">
+            <source src="https://player.vimeo.com/external/498336368.hd.mp4?s=d7e5051aeb2cbf86c2e3dd7448e8983cf44deafb&amp;profile_id=175&amp;oauth2_token_id=57447761" type="video/mp4">
+        </video>
+
+        <div class="absolute inset-0 bg-black/60 backdrop-blur-[2px]"></div>
+
+        <div class="absolute top-0 left-0 w-[50vw] h-[50vw] bg-blue-900/20 rounded-full mix-blend-screen filter blur-[120px] -translate-x-1/4 -translate-y-1/4 pointer-events-none"></div>
+        <div class="absolute bottom-0 right-0 w-[60vw] h-[60vw] bg-indigo-900/20 rounded-full mix-blend-screen filter blur-[120px] translate-x-1/4 translate-y-1/4 pointer-events-none"></div>
+    </div>
+
+    <nav class="fixed top-0 left-0 w-full z-50 px-8 md:px-12 py-6 flex items-center justify-between animate-fade-up opacity-0 delay-100 mix-blend-difference">
+        <div class="flex items-center gap-3 cursor-pointer group">
+            <i class="ph-fill ph-sun text-3xl text-white group-hover:text-deep-indigo transition-colors duration-500"></i>
+            <span class="font-sans font-bold tracking-[0.15em] text-sm text-white">THE MAT LAB</span>
+        </div>
+
+        <div class="hidden lg:flex items-center gap-10">
+            <a href="#" class="text-white/70 hover:text-white text-sm font-medium tracking-wide transition-colors duration-300">Schedule</a>
+            <a href="#" class="text-white/70 hover:text-white text-sm font-medium tracking-wide transition-colors duration-300">Technique Library</a>
+            <a href="#" class="text-white/70 hover:text-white text-sm font-medium tracking-wide transition-colors duration-300">My Progress</a>
+            <a href="#" class="text-white/70 hover:text-white text-sm font-medium tracking-wide transition-colors duration-300">Shop</a>
+        </div>
+
+        <button type="button" class="bg-white text-black px-6 py-2.5 rounded-full text-sm font-semibold tracking-wide hover:scale-105 hover:bg-deep-indigo hover:text-white transition-all duration-300 ease-out flex items-center gap-2">
+            Member Profile
+        </button>
+    </nav>
+
+    <main class="relative z-10 w-full h-full flex items-center px-8 md:px-12 lg:px-20 max-w-[1800px] mx-auto pt-20">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 w-full items-center">
+
+            <div class="col-span-1 lg:col-span-7 flex flex-col justify-center">
+                <div class="overflow-hidden mb-4">
+                    <h2 class="font-serif italic text-3xl md:text-5xl text-white/80 animate-fade-up opacity-0 delay-200">
+                        Master the Gentle Art
+                    </h2>
+                </div>
+
+                <div class="overflow-visible mb-8">
+                    <h1 class="font-sans font-bold text-7xl md:text-[120px] leading-[0.85] tracking-[-0.04em] bg-clip-text text-transparent bg-gradient-to-b from-white to-deep-indigo animate-fade-up opacity-0 delay-300 py-2">
+                        EVOLVE<br>FASTER
+                    </h1>
+                </div>
+
+                <p class="font-sans text-lg md:text-xl text-white/70 max-w-xl leading-relaxed animate-fade-up opacity-0 delay-400 mb-12 font-light">
+                    Access world-class instruction, track your promotions, and book your next session in one seamless interface.
+                </p>
+
+                <div class="flex flex-col sm:flex-row items-center gap-5 animate-fade-up opacity-0 delay-500">
+                    <button type="button" class="group w-full sm:w-auto bg-white text-black px-8 py-4 rounded-full font-semibold text-base tracking-wide flex items-center justify-center gap-4 hover:scale-105 hover:shadow-[0_0_20px_rgba(255,255,255,0.3)] transition-all duration-400 ease-out">
+                        <span>View Today's Schedule</span>
+                        <div class="bg-electric-blue text-white w-8 h-8 rounded-full flex items-center justify-center group-hover:rotate-45 transition-transform duration-400">
+                            <i class="ph-bold ph-arrow-up-right text-sm"></i>
+                        </div>
+                    </button>
+
+                    <button type="button" class="w-full sm:w-auto glass-panel text-white px-8 py-4 rounded-full font-semibold text-base tracking-wide hover:scale-105 hover:bg-white/10 transition-all duration-400 ease-out flex items-center justify-center gap-3">
+                        <i class="ph-fill ph-play-circle text-xl text-deep-indigo"></i>
+                        <span>Watch Latest Techniques</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="col-span-1 lg:col-span-5 flex flex-col gap-6 w-full max-w-md mx-auto lg:ml-auto lg:mr-0 animate-fade-up opacity-0 delay-700">
+
+                <div class="glass-panel rounded-3xl p-7 relative overflow-hidden group hover:bg-white/[0.04] transition-colors duration-500">
+                    <div class="absolute top-0 right-0 w-32 h-32 bg-electric-blue/20 rounded-full filter blur-[40px] -translate-y-1/2 translate-x-1/2 group-hover:bg-electric-blue/30 transition-colors duration-700"></div>
+
+                    <div class="flex items-center justify-between mb-6 relative z-10">
+                        <span class="text-xs font-bold tracking-[0.15em] text-white/50 uppercase">Next Session</span>
+                        <span class="text-sm font-medium text-deep-indigo flex items-center gap-1.5 bg-deep-indigo/10 px-3 py-1 rounded-full">
+                            <i class="ph-fill ph-clock"></i>
+                            In 2 Hours
+                        </span>
+                    </div>
+
+                    <div class="relative z-10 mb-8">
+                        <h3 class="text-2xl font-serif text-white mb-2 group-hover:text-deep-indigo transition-colors duration-300">Advanced Gi Techniques</h3>
+                        <p class="text-white/60 text-sm font-sans flex items-center gap-2">
+                            <i class="ph ph-map-pin"></i>
+                            Mat A - Main Floor
+                        </p>
+                    </div>
+
+                    <div class="flex items-center justify-between relative z-10 pt-6 border-t border-white/10">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 rounded-full bg-gradient-to-br from-gray-700 to-gray-900 flex items-center justify-center border border-white/20 text-white font-bold text-sm">
+                                M
+                            </div>
+                            <div>
+                                <p class="text-sm font-bold text-white">Prof. Mendes</p>
+                                <p class="text-xs text-white/50">Head Instructor</p>
+                            </div>
+                        </div>
+                        <button type="button" class="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center hover:bg-white hover:text-black transition-all duration-300">
+                            <i class="ph-bold ph-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="glass-panel rounded-3xl p-7 relative overflow-hidden group hover:bg-white/[0.04] transition-colors duration-500 delay-900 animate-fade-up opacity-0">
+                    <div class="flex items-center justify-between mb-6">
+                        <span class="text-xs font-bold tracking-[0.15em] text-white/50 uppercase">Belt Progression</span>
+                        <i class="ph-fill ph-trend-up text-white/40"></i>
+                    </div>
+
+                    <div class="flex items-end gap-4 mb-6">
+                        <div class="w-16 h-4 bg-[#663399] rounded-sm relative border border-white/20 shadow-[0_0_15px_rgba(102,51,153,0.3)]">
+                            <div class="absolute right-2 top-0 bottom-0 w-1.5 bg-white"></div>
+                            <div class="absolute right-4 top-0 bottom-0 w-1.5 bg-white"></div>
+                        </div>
+                        <div>
+                            <h4 class="text-lg font-bold text-white leading-none mb-1">Purple Belt</h4>
+                            <p class="text-xs text-white/50">2 Stripes</p>
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between text-xs text-white/60 mb-2 font-medium">
+                            <span>Classes Attended</span>
+                            <span>42 / 60</span>
+                        </div>
+                        <div class="w-full h-2 bg-black/50 rounded-full overflow-hidden border border-white/5">
+                            <div class="h-full bg-electric-blue w-[70%] progress-bar-stripes relative">
+                                <div class="absolute inset-0 bg-gradient-to-r from-transparent to-white/20"></div>
+                            </div>
+                        </div>
+                        <p class="text-xs text-deep-indigo mt-3 text-center">18 classes until next stripe review</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+</body>
+</html>
