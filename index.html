@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>The Mat Lab - Elite BJJ Portal</title>
+    <title>Catch Academy - Elite BJJ Portal</title>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -70,6 +70,7 @@
             background-image: linear-gradient(45deg, rgba(255,255,255,0.1) 25%, transparent 25%, transparent 50%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.1) 75%, transparent 75%, transparent);
             background-size: 1rem 1rem;
         }
+
     </style>
 </head>
 <body class="antialiased selection:bg-electric-blue selection:text-white h-screen w-full relative">
@@ -85,23 +86,36 @@
         <div class="absolute bottom-0 right-0 w-[60vw] h-[60vw] bg-indigo-900/20 rounded-full mix-blend-screen filter blur-[120px] translate-x-1/4 translate-y-1/4 pointer-events-none"></div>
     </div>
 
-    <nav class="fixed top-0 left-0 w-full z-50 px-8 md:px-12 py-6 flex items-center justify-between animate-fade-up opacity-0 delay-100 mix-blend-difference">
+    <nav class="fixed top-0 left-0 w-full z-50 px-8 md:px-12 py-6 flex items-center justify-between animate-fade-up opacity-0 delay-100 bg-black/20 backdrop-blur-md border-b border-white/5">
         <a href="index.html" class="flex items-center gap-3 cursor-pointer group">
             <i class="ph-fill ph-sun text-3xl text-white group-hover:text-deep-indigo transition-colors duration-500"></i>
-            <span class="font-sans font-bold tracking-[0.15em] text-sm text-white">THE MAT LAB</span>
+            <span class="font-sans font-bold tracking-[0.15em] text-sm text-white">Catch Academy</span>
         </a>
 
-        <div class="hidden lg:flex items-center gap-10">
-            <a href="schedule.html" class="text-white/70 hover:text-white text-sm font-medium tracking-wide transition-colors duration-300">Schedule</a>
-            <a href="techniques.html" class="text-white/70 hover:text-white text-sm font-medium tracking-wide transition-colors duration-300">Technique Library</a>
-            <a href="#" class="text-white/70 hover:text-white text-sm font-medium tracking-wide transition-colors duration-300">My Progress</a>
-            <a href="#" class="text-white/70 hover:text-white text-sm font-medium tracking-wide transition-colors duration-300">Shop</a>
+        <div class="flex items-center gap-2 sm:gap-3">
+            <button type="button" class="hidden sm:flex bg-white text-black px-6 py-2.5 rounded-full text-sm font-semibold tracking-wide hover:scale-105 hover:bg-deep-indigo hover:text-white transition-all duration-300 ease-out items-center gap-2">
+                Member Profile
+            </button>
+            <button type="button" id="nav-toggle" class="p-2.5 rounded-full text-white hover:bg-white/10 transition-colors" aria-label="Open menu" aria-expanded="false" aria-controls="nav-panel">
+                <i class="ph-bold ph-list text-2xl" aria-hidden="true"></i>
+            </button>
         </div>
-
-        <button type="button" class="bg-white text-black px-6 py-2.5 rounded-full text-sm font-semibold tracking-wide hover:scale-105 hover:bg-deep-indigo hover:text-white transition-all duration-300 ease-out flex items-center gap-2">
-            Member Profile
-        </button>
     </nav>
+
+    <div id="nav-backdrop" class="fixed inset-0 z-[100] bg-black/70 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300" aria-hidden="true"></div>
+    <aside id="nav-panel" class="fixed inset-y-0 right-0 z-[101] w-full max-w-sm bg-neutral-950/98 border-l border-white/10 shadow-2xl translate-x-full transition-transform duration-300 ease-out flex flex-col" aria-hidden="true">
+        <div class="flex items-center justify-between p-6 border-b border-white/10">
+            <span class="text-xs font-bold tracking-[0.2em] text-deep-indigo uppercase">Menu</span>
+            <button type="button" id="nav-close" class="p-2 rounded-full text-white/80 hover:text-white hover:bg-white/10 transition-colors" aria-label="Close menu">
+                <i class="ph-bold ph-x text-xl" aria-hidden="true"></i>
+            </button>
+        </div>
+        <nav class="flex flex-col p-4 gap-1" aria-label="Primary">
+            <a href="schedule.html" class="rounded-xl px-4 py-4 text-lg font-semibold text-white/90 hover:bg-white/5 transition-colors">Schedule</a>
+            <a href="techniques.html" class="rounded-xl px-4 py-4 text-lg font-semibold text-white/90 hover:bg-white/5 transition-colors">Technique Library</a>
+            <a href="instructors.html" class="rounded-xl px-4 py-4 text-lg font-semibold text-white/90 hover:bg-white/5 transition-colors">Instructors</a>
+        </nav>
+    </aside>
 
     <main class="relative z-10 w-full h-full flex items-center px-8 md:px-12 lg:px-20 max-w-[1800px] mx-auto pt-20">
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-20 w-full items-center">
@@ -210,5 +224,36 @@
         </div>
     </main>
 
+    <script>
+        (function () {
+            var panel = document.getElementById('nav-panel');
+            var backdrop = document.getElementById('nav-backdrop');
+            var toggle = document.getElementById('nav-toggle');
+            var closeBtn = document.getElementById('nav-close');
+            function openMenu() {
+                if (!panel || !backdrop || !toggle) return;
+                backdrop.classList.remove('opacity-0', 'pointer-events-none');
+                panel.classList.remove('translate-x-full');
+                backdrop.setAttribute('aria-hidden', 'false');
+                panel.setAttribute('aria-hidden', 'false');
+                toggle.setAttribute('aria-expanded', 'true');
+                document.body.style.overflow = 'hidden';
+            }
+            function closeMenu() {
+                if (!panel || !backdrop || !toggle) return;
+                backdrop.classList.add('opacity-0', 'pointer-events-none');
+                panel.classList.add('translate-x-full');
+                backdrop.setAttribute('aria-hidden', 'true');
+                panel.setAttribute('aria-hidden', 'true');
+                toggle.setAttribute('aria-expanded', 'false');
+                document.body.style.overflow = '';
+            }
+            toggle && toggle.addEventListener('click', openMenu);
+            closeBtn && closeBtn.addEventListener('click', closeMenu);
+            backdrop && backdrop.addEventListener('click', closeMenu);
+            panel && panel.querySelectorAll('a').forEach(function (a) { a.addEventListener('click', closeMenu); });
+            document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeMenu(); });
+        })();
+    </script>
 </body>
 </html>
