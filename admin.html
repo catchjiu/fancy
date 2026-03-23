@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin | Catch Academy</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Epilogue:wght@700;800;900&amp;family=Inter:wght@400;500;600&amp;family=Instrument+Sans:ital,wght@0,400;0,700;0,800;1,400&amp;family=Instrument+Serif:ital@1&amp;display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        background: '#131313',
+                        'on-background': '#e2e2e2',
+                        'on-surface-variant': '#c4c5d9',
+                        'surface-container': '#1f1f1f',
+                        'surface-container-low': '#1b1b1b',
+                        'surface-container-high': '#2a2a2a',
+                        primary: '#bac3ff',
+                        'primary-container': '#3054ff',
+                        error: '#ffb4ab'
+                    },
+                    fontFamily: {
+                        headline: ['Instrument Sans', 'Epilogue', 'sans-serif'],
+                        body: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        };
+    </script>
+    <style>
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .ghost-border { outline: 1px solid rgba(68, 70, 86, 0.15); }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body min-h-screen">
+    <div class="flex min-h-screen">
+        <aside class="w-64 shrink-0 border-r border-white/10 bg-[#0a0a0a] flex flex-col">
+            <div class="p-6 border-b border-white/10">
+                <a href="index.html" class="text-lg font-black tracking-tighter text-[#bac3ff] uppercase font-headline block">Catch Academy</a>
+                <p class="text-[10px] text-on-surface-variant uppercase tracking-widest mt-1">Admin</p>
+            </div>
+            <nav id="admin-sidebar-nav" class="flex-1 p-3 space-y-1"></nav>
+            <div class="p-4 border-t border-white/10 space-y-2">
+                <a href="schedule.html" class="block text-xs text-on-surface-variant hover:text-primary transition-colors">View site →</a>
+            </div>
+        </aside>
+        <div class="flex-1 flex flex-col min-w-0">
+            <header class="sticky top-0 z-40 flex flex-wrap items-center justify-between gap-4 px-6 py-4 border-b border-white/10 bg-background/95 backdrop-blur-xl">
+                <h1 class="text-xl font-bold font-headline text-white">Content dashboard</h1>
+                <button type="button" id="btn-save-all" class="bg-primary-container hover:opacity-90 text-white px-6 py-2.5 rounded-xl text-sm font-bold uppercase tracking-wide shadow-lg shadow-primary-container/20">
+                    Save all changes
+                </button>
+            </header>
+            <main id="admin-main" class="flex-1 p-6 md:p-10 overflow-auto"></main>
+        </div>
+    </div>
+    <div id="admin-toast" class="fixed bottom-6 right-6 px-4 py-3 rounded-xl text-sm font-medium shadow-lg z-[200] opacity-0 pointer-events-none transition-opacity bg-[#3054ff] text-white"></div>
+    <script src="js/catch-store.js"></script>
+    <script src="js/admin-app.js"></script>
+</body>
+</html>
