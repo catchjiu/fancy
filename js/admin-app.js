@@ -60,11 +60,22 @@
     }
 
     function save() {
-        if (window.CatchStore.save(state)) {
-            showToast('Saved to this browser (localStorage).');
-        } else {
-            showToast('Could not save.', true);
+        if (!window.CatchStore.saveAsync) {
+            if (window.CatchStore.save(state)) showToast('Saved to this browser (localStorage).');
+            else showToast('Could not save.', true);
+            return;
         }
+        window.CatchStore.saveAsync(state).then(function (r) {
+            if (r.localOnly) {
+                showToast('Saved locally. Set URL and anon key in js/supabase-config.js to use the database.');
+            } else if (r.needAuth) {
+                showToast(r.message, true);
+            } else if (r.ok) {
+                showToast('Saved to the database.');
+            } else {
+                showToast(r.error || 'Save failed. If you are signed in, ensure your user is in admin_users.', true);
+            }
+        });
     }
 
     function showToast(msg, err) {
@@ -85,7 +96,7 @@
         state = window.CatchStore.defaultData();
         window.CatchStore.save(state);
         render();
-        showToast('Reset to defaults.');
+        showToast('Reset to defaults. Click Save to sync to the database if you use Supabase.');
     }
 
     function exportData() {
@@ -104,7 +115,7 @@
         try {
             state = window.CatchStore.importJson(raw);
             render();
-            showToast('Imported and saved.');
+            showToast('Imported. Click Save to push to the database if you use Supabase.');
         } catch (e) {
             showToast('Invalid JSON: ' + e.message, true);
         }
@@ -325,9 +336,13 @@
         var s = state.schedule.classes.length;
         var ins = state.instructors.list.length;
         var vid = state.techniques.videos.length;
+        var remote =
+            window.CatchStore.isRemoteConfigured && window.CatchStore.isRemoteConfigured()
+                ? '<p class="text-on-surface-variant">Public pages load content from <strong class="text-white">Supabase</strong> when <code class="text-primary text-xs">js/supabase-config.js</code> is set. <strong class="text-white">Sign in</strong> here to save changes to the database. Your user must be listed in the <code class="text-xs">admin_users</code> table (run SQL in Supabase after your first signup).</p>'
+                : '<p class="text-on-surface-variant">Set your Supabase URL and anon key in <code class="text-primary text-xs">js/supabase-config.js</code> so the site and admin read/write the same database. Until then, content uses <strong class="text-white">localStorage</strong> in this browser.</p>';
         root.innerHTML =
             '<div class="max-w-2xl space-y-6">' +
-            '<p class="text-on-surface-variant">Edits are stored in <strong class="text-white">localStorage</strong> in this browser only. Visitors see updates when they use the same browser profile, or after you deploy a static JSON in a future backend.</p>' +
+            remote +
             '<div class="grid sm:grid-cols-3 gap-4">' +
             cardStat('Schedule classes', s) +
             cardStat('Instructors', ins) +
@@ -367,8 +382,72 @@
 
     var activeTab = 'overview';
 
-    function render() {
-        state = window.CatchStore.load();
+    function renderAuthSlot() {
+        var slot = $('#admin-auth-slot');
+        if (!slot || !window.CatchStore) return;
+        if (!window.CatchStore.isRemoteConfigured || !window.CatchStore.isRemoteConfigured()) {
+            slot.innerHTML =
+                '<span class="text-xs text-on-surface-variant max-w-md">DB: local · edit <code class="text-primary">js/supabase-config.js</code></span>';
+            return;
+        }
+        var client = window.CatchStore.getSupabaseClient && window.CatchStore.getSupabaseClient();
+        if (!client) {
+            slot.innerHTML = '<span class="text-xs text-amber-400">Supabase failed to initialize.</span>';
+            return;
+        }
+        client.auth.getSession().then(function (res) {
+            var session = res.data && res.data.session;
+            if (session && session.user) {
+                slot.innerHTML =
+                    '<span class="text-xs text-on-surface-variant truncate max-w-[220px]" title="' +
+                    escHtml(session.user.email || '') +
+                    '">' +
+                    escHtml(session.user.email || session.user.id) +
+                    '</span>' +
+                    '<button type="button" id="btn-admin-signout" class="text-xs font-bold uppercase tracking-wide text-primary border border-primary/40 px-3 py-1.5 rounded-lg hover:bg-primary/10">Sign out</button>';
+                var so = $('#btn-admin-signout');
+                if (so)
+                    so.addEventListener('click', function () {
+                        client.auth.signOut().then(function () {
+                            renderAuthSlot();
+                            showToast('Signed out.');
+                        });
+                    });
+            } else {
+                slot.innerHTML =
+                    '<input type="email" id="admin-email" autocomplete="username" placeholder="Email" class="bg-surface-container border border-white/10 rounded-lg px-3 py-2 text-sm text-white w-40 max-w-[40vw]" />' +
+                    '<input type="password" id="admin-password" autocomplete="current-password" placeholder="Password" class="bg-surface-container border border-white/10 rounded-lg px-3 py-2 text-sm text-white w-36 max-w-[36vw]" />' +
+                    '<button type="button" id="btn-admin-signin" class="text-xs font-bold uppercase tracking-wide bg-primary-container text-white px-4 py-2 rounded-lg">Sign in</button>';
+                var si = $('#btn-admin-signin');
+                if (si)
+                    si.addEventListener('click', function () {
+                        var em = $('#admin-email');
+                        var pw = $('#admin-password');
+                        if (!em || !pw) return;
+                        client.auth
+                            .signInWithPassword({ email: em.value.trim(), password: pw.value })
+                            .then(function (r) {
+                                if (r.error) {
+                                    showToast(r.error.message, true);
+                                    return;
+                                }
+                                renderAuthSlot();
+                                showToast('Signed in.');
+                            });
+                    });
+            }
+        });
+    }
+
+    function bindAuthListener() {
+        var c = window.CatchStore.getSupabaseClient && window.CatchStore.getSupabaseClient();
+        if (!c || !c.auth || !c.auth.onAuthStateChange) return;
+        c.auth.onAuthStateChange(function () {
+            renderAuthSlot();
+        });
+    }
+
+    function renderPanel() {
         var root = $('#admin-main');
         if (!root) return;
 
@@ -405,9 +484,24 @@
         else if (activeTab === 'data') renderData(panel);
     }
 
+    function render() {
+        if (!window.CatchStore) return;
+        if (window.CatchStore.loadAsync) {
+            window.CatchStore.loadAsync().then(function (data) {
+                state = data;
+                renderPanel();
+            });
+        } else {
+            state = window.CatchStore.load();
+            renderPanel();
+        }
+    }
+
     function init() {
         if (!window.CatchStore) return;
         $('#btn-save-all').addEventListener('click', save);
+        renderAuthSlot();
+        bindAuthListener();
         render();
     }
 

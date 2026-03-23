@@ -257,7 +257,9 @@
         };
     }
 
-    function load() {
+    var _sbClient = null;
+
+    function loadFromLocal() {
         try {
             var raw = localStorage.getItem(STORAGE_KEY);
             if (!raw) return defaultData();
@@ -267,6 +269,102 @@
         } catch (e) {
             return defaultData();
         }
+    }
+
+    function load() {
+        return loadFromLocal();
+    }
+
+    function getSupabaseClient() {
+        if (_sbClient) return _sbClient;
+        var g = typeof window !== 'undefined' ? window : null;
+        if (!g || !g.__CATCH_SUPABASE__) return null;
+        var cfg = g.__CATCH_SUPABASE__;
+        if (!cfg.url || !cfg.anonKey) return null;
+        if (!g.supabase || typeof g.supabase.createClient !== 'function') return null;
+        _sbClient = g.supabase.createClient(cfg.url, cfg.anonKey, {
+            auth: {
+                persistSession: true,
+                autoRefreshToken: true,
+                detectSessionInUrl: true,
+                storage: typeof g.localStorage !== 'undefined' ? g.localStorage : undefined
+            }
+        });
+        return _sbClient;
+    }
+
+    function isRemoteConfigured() {
+        var cfg = typeof window !== 'undefined' && window.__CATCH_SUPABASE__;
+        return !!(cfg && cfg.url && cfg.anonKey);
+    }
+
+    function loadAsync() {
+        return new Promise(function (resolve) {
+            var base = defaultData();
+            var client = getSupabaseClient();
+            if (!client) {
+                resolve(loadFromLocal());
+                return;
+            }
+            client
+                .from('cms_site_content')
+                .select('payload')
+                .eq('id', 'main')
+                .maybeSingle()
+                .then(function (res) {
+                    if (res.error) {
+                        console.warn('CatchStore: Supabase load failed', res.error);
+                        resolve(loadFromLocal());
+                        return;
+                    }
+                    var payload = res.data && res.data.payload;
+                    var merged = mergeDeep(
+                        base,
+                        typeof payload === 'object' && payload !== null && !Array.isArray(payload) ? payload : {}
+                    );
+                    try {
+                        localStorage.setItem(STORAGE_KEY, JSON.stringify(merged));
+                    } catch (e) {}
+                    resolve(merged);
+                })
+                .catch(function (err) {
+                    console.warn('CatchStore: Supabase load error', err);
+                    resolve(loadFromLocal());
+                });
+        });
+    }
+
+    function saveAsync(data) {
+        return new Promise(function (resolve) {
+            var client = getSupabaseClient();
+            if (!client) {
+                resolve({ ok: save(data), localOnly: true });
+                return;
+            }
+            client.auth.getSession().then(function (sessRes) {
+                var session = sessRes.data && sessRes.data.session;
+                if (!session) {
+                    resolve({ ok: false, needAuth: true, message: 'Sign in to save to the database.' });
+                    return;
+                }
+                client
+                    .from('cms_site_content')
+                    .upsert(
+                        { id: 'main', payload: data, updated_at: new Date().toISOString() },
+                        { onConflict: 'id' }
+                    )
+                    .then(function (res) {
+                        if (res.error) {
+                            resolve({ ok: false, error: res.error.message || String(res.error) });
+                            return;
+                        }
+                        try {
+                            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                        } catch (e) {}
+                        resolve({ ok: true });
+                    });
+            });
+        });
     }
 
     function mergeDeep(base, patch) {
@@ -314,6 +412,10 @@
         escapeHtml: escapeHtml,
         exportJson: exportJson,
         importJson: importJson,
-        mergeDeep: mergeDeep
+        mergeDeep: mergeDeep,
+        getSupabaseClient: getSupabaseClient,
+        isRemoteConfigured: isRemoteConfigured,
+        loadAsync: loadAsync,
+        saveAsync: saveAsync
     };
 })(typeof window !== 'undefined' ? window : globalThis);

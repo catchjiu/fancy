@@ -372,13 +372,22 @@
         }
     }
 
-    function run() {
-        if (!window.CatchStore) return;
-        var data = window.CatchStore.load();
+    function applyPage(data) {
         var page = document.body && document.body.getAttribute('data-page');
         if (page === 'schedule') hydrateSchedule(data);
         else if (page === 'techniques') hydrateTechniques(data);
         else if (page === 'instructors') hydrateInstructors(data);
+    }
+
+    function run() {
+        if (!window.CatchStore) return;
+        if (window.CatchStore.loadAsync) {
+            window.CatchStore.loadAsync().then(applyPage).catch(function () {
+                applyPage(window.CatchStore.load());
+            });
+        } else {
+            applyPage(window.CatchStore.load());
+        }
     }
 
     window.CatchHydrate = { run: run };

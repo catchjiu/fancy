@@ -51,14 +51,19 @@
         <div class="flex-1 flex flex-col min-w-0">
             <header class="sticky top-0 z-40 flex flex-wrap items-center justify-between gap-4 px-6 py-4 border-b border-white/10 bg-background/95 backdrop-blur-xl">
                 <h1 class="text-xl font-bold font-headline text-white">Content dashboard</h1>
-                <button type="button" id="btn-save-all" class="bg-primary-container hover:opacity-90 text-white px-6 py-2.5 rounded-xl text-sm font-bold uppercase tracking-wide shadow-lg shadow-primary-container/20">
-                    Save all changes
-                </button>
+                <div class="flex flex-wrap items-center justify-end gap-3">
+                    <div id="admin-auth-slot" class="flex flex-wrap items-center gap-2"></div>
+                    <button type="button" id="btn-save-all" class="bg-primary-container hover:opacity-90 text-white px-6 py-2.5 rounded-xl text-sm font-bold uppercase tracking-wide shadow-lg shadow-primary-container/20">
+                        Save all changes
+                    </button>
+                </div>
             </header>
             <main id="admin-main" class="flex-1 p-6 md:p-10 overflow-auto"></main>
         </div>
     </div>
     <div id="admin-toast" class="fixed bottom-6 right-6 px-4 py-3 rounded-xl text-sm font-medium shadow-lg z-[200] opacity-0 pointer-events-none transition-opacity bg-[#3054ff] text-white"></div>
+    <script src="js/supabase-config.js"></script>
+    <script src="https://unpkg.com/@supabase/supabase-js@2.45.0/dist/umd/supabase.js"></script>
     <script src="js/catch-store.js"></script>
     <script src="js/admin-app.js"></script>
 </body>
